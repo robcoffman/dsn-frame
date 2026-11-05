@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Space Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --space:#0f1830;      /* base: deep slate-blue night */
+  --panel:#16213f;      /* raised surfaces */
+  --rule:#26345c;       /* hairlines and idle dishes */
+  --paper:#ebe6d8;      /* primary text, warm so it doesn't glare at night */
+  --dim:#8b95b3;        /* secondary text */
+  --down:#f2b544;       /* downlink: sodium amber */
+  --up:#5fd3c4;         /* uplink: teal */
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--space);color:var(--paper);font-family:var(--body);overflow:hidden;cursor:none}
+body{display:grid;grid-template-rows:auto 1fr;font-size:clamp(13px,1.35vw,20px);font-variant-numeric:tabular-nums}
+
+/* top bar */
+header{display:flex;align-items:baseline;gap:1.2em;padding:.9em 1.6em .7em;border-bottom:1px solid var(--rule)}
+header h1{font-family:var(--display);font-weight:500;font-size:1.6em;letter-spacing:.01em}
+header .sum{color:var(--dim)}
+header .clock{margin-left:auto;font-family:var(--display);font-size:1.4em}
+header .feed{display:flex;align-items:center;gap:.45em;color:var(--dim);font-size:.85em}
+header .feed i{width:.55em;height:.55em;border-radius:50%;background:var(--up)}
+header .feed.stale i{background:var(--down)}
+header .feed.down i{background:#e2614f}
+
+main{display:grid;grid-template-columns:1.65fr 1fr;min-height:0}
+
+/* spotlight */
+#spot{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr auto;padding:1.4em 1.8em 1.2em;gap:1em;min-height:0;border-right:1px solid var(--rule)}
+.hero{display:grid;grid-template-columns:38% 1fr;gap:1.4em;align-items:start;min-height:0}
+.hero figure{aspect-ratio:1/1;background:var(--panel);border-radius:6px;overflow:hidden;display:grid;place-items:center}
+.hero img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.hero img.on{opacity:1}
+.hero figure svg{width:55%;color:var(--rule)}
+.where{color:var(--dim);font-size:.95em;margin-bottom:.2em}
+.where b{color:var(--paper);font-weight:700}
+#craft{font-family:var(--display);font-weight:600;font-size:3.6em;line-height:.95;letter-spacing:-.005em;margin-bottom:.35em;text-wrap:balance}
+#blurb{color:#c9c6bd;line-height:1.5;max-width:38em;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1em;align-self:end}
+.stat dt{color:var(--dim);font-size:.82em;margin-bottom:.15em}
+.stat dd{font-family:var(--display);font-size:1.9em;font-weight:500;line-height:1}
+.stat dd small{font-size:.55em;color:var(--dim);font-weight:400;margin-left:.15em}
+.stat.dn dd{color:var(--down)} .stat.upl dd{color:var(--up)}
+
+/* the distance ladder: Earth -> heliopause, log scale */
+.ladder{position:relative;height:4.4em;margin-top:.4em}
+.ladder .track{position:absolute;left:0;right:0;top:1.7em;height:2px;background:var(--rule)}
+.ladder .beam{position:absolute;left:0;top:1.7em;height:2px;background:linear-gradient(90deg,var(--down),rgba(242,181,68,.25));transition:width 1.2s ease}
+.ladder .pulse{position:absolute;top:calc(1.7em - 3px);width:8px;height:8px;border-radius:50%;background:var(--down);box-shadow:0 0 8px var(--down);animation:travel var(--t,4s) linear infinite}
+@keyframes travel{from{left:var(--to,100%);opacity:1}to{left:0;opacity:.2}}
+.ladder .mark{position:absolute;top:1.25em;transform:translateX(-50%);text-align:center;color:var(--dim);font-size:.72em;white-space:nowrap}
+.ladder .mark::before{content:"";display:block;width:1px;height:.9em;margin:0 auto .35em;background:var(--dim);opacity:.6}
+.ladder .earth{position:absolute;left:0;top:calc(1.7em - 6px);width:12px;height:12px;border-radius:50%;background:#4f8de0}
+.ladder .craft{position:absolute;top:calc(1.7em - 8px);width:16px;height:16px;transform:translateX(-50%);border:2px solid var(--down);border-radius:50%;background:var(--space);transition:left 1.2s ease}
+.ladder .craftlbl{position:absolute;top:-.1em;transform:translateX(-50%);font-family:var(--display);font-size:.95em;color:var(--down);white-space:nowrap;transition:left 1.2s ease}
+
+.dots{display:flex;gap:.4em;margin-top:.8em}
+.dots i{width:.45em;height:.45em;border-radius:50%;background:var(--rule)}
+.dots i.on{background:var(--paper)}
+
+/* complexes */
+#sites{display:grid;grid-template-rows:repeat(3,auto);align-content:start;overflow:hidden}
+.site{padding:.75em 1.4em .6em;border-bottom:1px solid var(--rule)}
+.site h2 time{white-space:nowrap}
+.site:last-child{border-bottom:0}
+.site h2{display:flex;align-items:baseline;gap:.6em;font-family:var(--display);font-weight:500;font-size:1.45em;margin-bottom:.45em}
+.site h2 span{font-family:var(--body);font-size:.58em;color:var(--dim);font-weight:400}
+.site h2 time{margin-left:auto;font-size:.8em;color:var(--dim);font-weight:400}
+.dish{display:grid;grid-template-columns:2.1em 4.6em 1fr auto;align-items:center;gap:.6em;padding:.15em 0;border-radius:4px}
+.dish.focus{background:var(--panel);box-shadow:-.6em 0 0 var(--panel),.6em 0 0 var(--panel)}
+.dish svg{width:2.1em;height:2.1em;overflow:visible}
+.dish .id{font-family:var(--display);font-size:1.05em;line-height:1.05}
+.dish .id small{display:block;color:var(--dim);font-size:.75em;font-family:var(--body)}
+.dish .tg{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dish.idle .tg{color:var(--dim)}
+.dish .rt{text-align:right;font-size:.85em;line-height:1.3;white-space:nowrap}
+.dish .rt .d{color:var(--down)} .dish .rt .u{color:var(--up)}
+.wave{opacity:0;transform-box:fill-box;transform-origin:center}
+.dish.rx .wave.dn{animation:wave 2.4s ease-out infinite}
+.dish.tx .wave.up{animation:wave 2.4s ease-out infinite 1.2s}
+@keyframes wave{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+
+.empty{display:grid;place-items:center;text-align:center;color:var(--dim);padding:2em;line-height:1.6}
+
+/* portrait frames (e.g. a rotated 10" panel): spotlight on top, sites below */
+@media (max-aspect-ratio:1/1){
+  body{font-size:clamp(13px,2.3vw,22px)}
+  main{grid-template-columns:1fr;grid-template-rows:1.4fr auto}
+  #spot{border-right:0;border-bottom:1px solid var(--rule)}
+  #sites{grid-template-rows:none;grid-template-columns:repeat(3,1fr)}
+  .site{border-bottom:0;border-right:1px solid var(--rule);padding:.9em .8em}
+  .site:last-child{border-right:0}
+  .dish{grid-template-columns:2em 1fr;row-gap:0}
+  .dish .tg{grid-column:2}
+  .dish .rt{display:none}
+  .dish .id small{display:inline;margin-left:.3em}
+  .hero{grid-template-columns:1fr}
+  .hero figure{aspect-ratio:16/10;max-height:38vh;width:100%}
+  #craft{font-size:4.2em}
+  #blurb{-webkit-line-clamp:8}
+  .site h2 span{display:none}
+}
+@media (max-width:700px) and (min-aspect-ratio:1/1){.hero{grid-template-columns:30% 1fr}#craft{font-size:2.6em}}
+
+/* lite mode for Pi Zero: no continuous animation */
+.lite .pulse,.lite .wave{animation:none!important}
+.lite .dish.rx .wave.dn,.lite .dish.tx .wave.up{opacity:.7;transform:none}
+@media (prefers-reduced-motion:reduce){.pulse,.wave{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Deep Space Network</h1>
+  <span class="sum" id="sum">Connecting…</span>
+  <span class="clock" id="utc"></span>
+  <span class="feed" id="feed"><i></i><span>Live</span></span>
+</header>
+<main>
+  <section id="spot" aria-live="polite">
+    <div class="hero">
+      <figure id="fig"><img id="img" alt=""><svg id="ph" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2"><rect x="24" y="24" width="16" height="16" rx="2"/><path d="M24 32H6M40 32h18M10 26v12M54 26v12M32 24V12m-6 0a6 6 0 0 0 12 0z"/></svg></figure>
+      <div>
+        <p class="where" id="where"></p>
+        <h2 id="craft">Listening…</h2>
+        <p id="blurb"></p>
+      </div>
+    </div>
+    <div></div>
+    <div>
+      <dl class="stats">
+        <div class="stat"><dt>Distance from Earth</dt><dd id="s-dist">–</dd></div>
+        <div class="stat"><dt>Signal travel time</dt><dd id="s-owlt">–</dd></div>
+        <div class="stat dn"><dt>Downlink</dt><dd id="s-down">–</dd></div>
+        <div class="stat upl"><dt>Uplink</dt><dd id="s-up">–</dd></div>
+      </dl>
+      <div class="ladder" id="ladder"></div>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+  <section id="sites"></section>
+</main>
+
+<script>
+/* ---------- settings (URL params) ----------
+   ?demo        use bundled sample-dsn.xml (no network)
+   ?lite        stop continuous animations (Pi Zero)
+   ?rotate=20   seconds per spotlight (default 15)
+   ?poll=10     seconds between feed refreshes (default 10)            */
+const P = new URLSearchParams(location.search);
+const DEMO = P.has('demo');
+if (P.has('lite')) document.documentElement.classList.add('lite');
+const ROTATE = (+P.get('rotate') || 15) * 1000;
+const POLL = (+P.get('poll') || 10) * 1000;
+
+const SITES = {
+  gdscc: {name:'Goldstone', place:'California', tz:'America/Los_Angeles'},
+  mdscc: {name:'Madrid',    place:'Spain',      tz:'Europe/Madrid'},
+  cdscc: {name:'Canberra',  place:'Australia',  tz:'Australia/Sydney'},
+};
+const BIG = new Set(['DSS14','DSS43','DSS63']); // the 70 m dishes
+
+// Feed code -> [display name, Wikipedia article]. Unknown codes fall back to NASA's config names.
+const CRAFT = {
+  VGR1:['Voyager 1','Voyager 1'], VGR2:['Voyager 2','Voyager 2'],
+  NHPC:['New Horizons','New Horizons'], JNO:['Juno','Juno (spacecraft)'],
+  MRO:['Mars Reconnaissance Orbiter','Mars Reconnaissance Orbiter'], MVN:['MAVEN','MAVEN'],
+  M01O:['Mars Odyssey','2001 Mars Odyssey'], MEX:['Mars Express','Mars Express'],
+  TGO:['ExoMars Trace Gas Orbiter','Trace Gas Orbiter'], M20:['Perseverance','Perseverance (rover)'],
+  MSL:['Curiosity','Curiosity (rover)'], EMM:['Hope','Emirates Mars Mission'],
+  JWST:['James Webb Space Telescope','James Webb Space Telescope'],
+  LRO:['Lunar Reconnaissance Orbiter','Lunar Reconnaissance Orbiter'], KPLO:['Danuri','Danuri'],
+  CAPS:['CAPSTONE','CAPSTONE'], PSYC:['Psyche','Psyche (spacecraft)'], LUCY:['Lucy','Lucy (spacecraft)'],
+  EURC:['Europa Clipper','Europa Clipper'], JUCE:['JUICE','Jupiter Icy Moons Explorer'],
+  JUICE:['JUICE','Jupiter Icy Moons Explorer'], SPP:['Parker Solar Probe','Parker Solar Probe'],
+  SOHO:['SOHO','Solar and Heliospheric Observatory'], ACE:['ACE','Advanced Composition Explorer'],
+  WIND:['Wind','Wind (spacecraft)'], STA:['STEREO-A','STEREO'], SOLO:['Solar Orbiter','Solar Orbiter'],
+  BEPI:['BepiColombo','BepiColombo'], ORX:['OSIRIS-APEX','OSIRIS-REx'], HYB2:['Hayabusa2','Hayabusa2'],
+  TESS:['TESS','Transiting Exoplanet Survey Satellite'], DSCO:['DSCOVR','Deep Space Climate Observatory'],
+  GAIA:['Gaia','Gaia (spacecraft)'], CHDR:['Chandra','Chandra X-ray Observatory'],
+};
+const PSEUDO = /^(DSN|DSS|TEST|TST|RFC|GBRA|NONE|SPACE)/i; // calibration / self-test targets
+let configNames = {};
+
+const $ = id => document.getElementById(id);
+const num = v => { const n = parseFloat(v); return isFinite(n) ? n : null; };
+
+/* ---------- formatting ---------- */
+function fmtRate(bps){
+  if (bps == null || bps <= 0) return null;
+  if (bps >= 1e6) return [(bps/1e6).toFixed(bps>=1e7?0:1), 'Mb/s'];
+  if (bps >= 1e3) return [(bps/1e3).toFixed(bps>=1e4?0:1), 'kb/s'];
+  return [bps < 10 ? bps.toFixed(1) : Math.round(bps), 'b/s'];
+}
+function fmtDist(km){
+  if (km == null || km <= 0) return ['–',''];
+  const AU = 149597870.7;
+  if (km >= 0.1*AU) return [(km/AU).toFixed(km/AU >= 10 ? 1 : 2), 'AU'];
+  if (km >= 1e6) return [(km/1e6).toFixed(2), 'million km'];
+  return [Math.round(km).toLocaleString(), 'km'];
+}
+function fmtLight(sec){
+  if (sec == null || sec <= 0) return ['–',''];
+  if (sec >= 3600) return [`${Math.floor(sec/3600)}h ${String(Math.round(sec%3600/60)).padStart(2,'0')}`, 'm'];
+  if (sec >= 60) return [`${Math.floor(sec/60)}m ${String(Math.round(sec%60)).padStart(2,'0')}`, 's'];
+  return [sec.toFixed(1), 's'];
+}
+const html = (a,b) => b ? `${a}<small>${b}</small>` : a;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function craftName(code){
+  const k = (code||'').toUpperCase();
+  return (CRAFT[k] && CRAFT[k][0]) || configNames[k.toLowerCase()] || k;
+}
+function wikiTitle(code){
+  const k = (code||'').toUpperCase();
+  return (CRAFT[k] && CRAFT[k][1]) || configNames[k.toLowerCase()] || null;
+}
+
+/* ---------- feed parsing ---------- */
+function parse(xmlText){
+  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+  const root = doc.documentElement;
+  if (!root || root.nodeName === 'parsererror') throw new Error('bad xml');
+  const sites = {gdscc:[], mdscc:[], cdscc:[]};
+  let cur = null;
+  for (const el of root.children){
+    if (el.nodeName === 'station'){ cur = el.getAttribute('name'); if (!sites[cur]) sites[cur]=[]; }
+    else if (el.nodeName === 'dish' && cur){
+      const sig = tag => [...el.getElementsByTagName(tag)].map(s => ({
+        type:(s.getAttribute('signalType')||'none').toLowerCase(),
+        rate:num(s.getAttribute('dataRate')), freq:num(s.getAttribute('frequency')),
+        power:num(s.getAttribute('power')), craft:(s.getAttribute('spacecraft')||'').toUpperCase(),
+      })).filter(s => s.type !== 'none' && s.craft && !PSEUDO.test(s.craft));
+      const targets = [...el.getElementsByTagName('target')].map(t => ({
+        craft:(t.getAttribute('name')||'').toUpperCase(),
+        range:num(t.getAttribute('downlegRange')) ?? num(t.getAttribute('uplegRange')),
+        rtlt:num(t.getAttribute('rtlt')),
+      })).filter(t => t.craft && !PSEUDO.test(t.craft));
+      const name = el.getAttribute('name');
+      sites[cur].push({
+        name, site:cur, big:BIG.has(name),
+        el:num(el.getAttribute('elevationAngle')) ?? 90,
+        down:sig('downSignal'), up:sig('upSignal'), targets,
+        array: el.getAttribute('isArray') === 'true',
+      });
+    }
+  }
+  return sites;
+}
+
+/* Flatten into one spotlight entry per (dish, spacecraft) */
+function spotlights(sites){
+  const out = [];
+  for (const k of Object.keys(SITES)) for (const d of sites[k]||[]){
+    const crafts = new Set([...d.targets.map(t=>t.craft), ...d.down.map(s=>s.craft), ...d.up.map(s=>s.craft)]);
+    for (const c of crafts){
+      const t = d.targets.find(t=>t.craft===c) || {};
+      const dn = d.down.find(s=>s.craft===c), up = d.up.find(s=>s.craft===c);
+      if (!dn && !up) continue;
+      out.push({dish:d, craft:c, range:t.range, rtlt:t.rtlt, dn, up});
+    }
+  }
+  return out;
+}
+
+/* ---------- rendering: complexes ---------- */
+function dishSvg(el){
+  // the bowl tilts with the antenna's real elevation angle
+  const tilt = 90 - Math.max(0, Math.min(90, el));
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 14v6M8 21h8" stroke="var(--dim)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <g transform="rotate(${-tilt} 12 12)">
+      <path d="M4 10a8 5 0 0 0 16 0z" fill="currentColor"/>
+      <path d="M12 10V4" stroke="currentColor" stroke-width="1.2"/>
+      <circle class="wave dn" cx="12" cy="3" r="3.5" fill="none" stroke="var(--down)" stroke-width="1"/>
+      <circle class="wave up" cx="12" cy="3" r="3.5" fill="none" stroke="var(--up)" stroke-width="1"/>
+    </g></svg>`;
+}
+
+function renderSites(sites, focusKey){
+  const now = new Date();
+  $('sites').innerHTML = Object.entries(SITES).map(([k,s]) => {
+    const t = now.toLocaleTimeString([], {hour:'numeric', minute:'2-digit', timeZone:s.tz});
+    const rows = (sites[k]||[]).map(d => {
+      const crafts = [...new Set([...d.down, ...d.up].map(x=>x.craft))];
+      const rx = d.down.length > 0, tx = d.up.length > 0;
+      const active = rx || tx;
+      const color = active ? 'var(--paper)' : 'var(--rule)';
+      const dr = d.down.map(s=>fmtRate(s.rate)).find(Boolean);
+      const ur = d.up.map(s=>fmtRate(s.rate)).find(Boolean);
+      const rt = [dr && `<span class="d">↓ ${dr.join(' ')}</span>`, ur && `<span class="u">↑ ${ur.join(' ')}</span>`]
+                 .filter(Boolean).join('<br>');
+      const focus = crafts.some(c => focusKey === d.name+'/'+c);
+      return `<div class="dish ${active?'':'idle'} ${rx?'rx':''} ${tx?'tx':''} ${focus?'focus':''}" style="color:${color}">
+        ${dishSvg(d.el)}
+        <div class="id">${d.name.replace('DSS','DSS ')}<small>${d.big?'70 m':'34 m'}</small></div>
+        <div class="tg">${active ? esc(crafts.map(craftName).join(', ')) : 'Idle'}</div>
+        <div class="rt">${rt}</div></div>`;
+    }).join('');
+    return `<div class="site"><h2>${s.name}<span>${s.place}</span><time>${t}</time></h2>${rows || '<div class="dish idle"><div></div><div class="tg">No dishes reported</div></div>'}</div>`;
+  }).join('');
+}
+
+/* ---------- rendering: spotlight ---------- */
+const LMIN = Math.log10(1e5), LMAX = Math.log10(3e10);
+const MARKS = [['Moon',384400],['Sun',1.496e8],['Jupiter',7.78e8],['Neptune',4.5e9],['Heliopause',1.8e10]];
+const pos = km => Math.max(0, Math.min(100, (Math.log10(Math.max(km,1e5)) - LMIN) / (LMAX - LMIN) * 100));
+
+function renderLadder(item){
+  const km = item.range;
+  const p = km ? pos(km) : 0;
+  const name = esc(craftName(item.craft));
+  // the pulse crosses the bar in roughly log-proportional time so Voyager feels slow and JWST fast
+  const t = item.rtlt ? Math.max(1.5, Math.min(9, 1 + Math.log10(item.rtlt+1)*1.6)) : 4;
+  $('ladder').innerHTML = `<div class="track"></div>
+    <div class="beam" style="width:${p}%"></div>
+    ${km ? `<div class="pulse" style="--to:${p}%;--t:${t}s"></div>` : ''}
+    <div class="earth" title="Earth"></div>
+    ${MARKS.map(([n,k]) => `<div class="mark" style="left:${pos(k)}%">${n}</div>`).join('')}
+    ${km ? `<div class="craft" style="left:${p}%"></div><div class="craftlbl" style="left:${Math.min(p, 93)}%">${name}</div>` : ''}`;
+}
+
+const wikiCache = {};
+async function wiki(title){
+  if (!title) return null;
+  if (title in wikiCache) return wikiCache[title];
+  let j = null;
+  const tries = DEMO
+    ? [`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replace(/ /g,'_'))}`]
+    : [`api/wiki?title=${encodeURIComponent(title)}`];
+  for (const u of tries){
+    try { const r = await fetch(u); if (r.ok){ j = await r.json(); break; } } catch(e){}
+  }
+  return (wikiCache[title] = j);
+}
+function imgUrl(src){
+  if (!src) return null;
+  const big = src.replace(/\/(\d+)px-/, '/640px-');   // sharper than the default 320px thumb
+  return DEMO ? big : `api/img?u=${encodeURIComponent(big)}`;
+}
+
+let items = [], idx = 0, lastSites = null;
+
+async function showSpot(){
+  if (!items.length){
+    $('craft').textContent = 'All dishes quiet';
+    $('where').textContent = '';
+    $('blurb').textContent = 'No spacecraft are talking to the network right now. This happens during handovers and maintenance; it usually lasts a few minutes.';
+    ['s-dist','s-owlt','s-down','s-up'].forEach(i => $(i).textContent = '–');
+    $('ladder').innerHTML = ''; $('dots').innerHTML = '';
+    $('img').classList.remove('on'); $('ph').style.display = '';
+    return;
+  }
+  idx %= items.length;
+  const it = items[idx], d = it.dish, s = SITES[d.site];
+  const key = d.name + '/' + it.craft;
+  renderSites(lastSites, key);
+
+  $('where').innerHTML = `${s.name} is listening on <b>${d.name.replace('DSS','DSS ')}</b>, a ${d.big?'70':'34'} m dish${d.array?' in an array':''}`;
+  $('craft').textContent = craftName(it.craft);
+  $('s-dist').innerHTML = html(...fmtDist(it.range));
+  $('s-owlt').innerHTML = html(...fmtLight(it.rtlt ? it.rtlt/2 : null));
+  const dr = it.dn && fmtRate(it.dn.rate), ur = it.up && fmtRate(it.up.rate);
+  $('s-down').innerHTML = dr ? html(...dr) : (it.dn ? html('Carrier','') : '–');
+  $('s-up').innerHTML   = ur ? html(...ur) : (it.up ? html('Carrier','') : '–');
+  renderLadder(it);
+  $('dots').innerHTML = items.map((_,i) => `<i class="${i===idx?'on':''}"></i>`).join('');
+
+  const img = $('img');
+  img.classList.remove('on');
+  $('blurb').textContent = '';
+  const w = await wiki(wikiTitle(it.craft));
+  if (items[idx] !== it) return;   // rotated on while we were waiting
+  const extract = w && w.extract ? w.extract : '';
+  $('blurb').textContent = extract;
+  const src = imgUrl(w && w.thumbnail && w.thumbnail.source);
+  if (src){
+    img.onload = () => { img.classList.add('on'); $('ph').style.display = 'none'; };
+    img.onerror = () => { $('ph').style.display = ''; };
+    img.src = src;
+  } else { $('ph').style.display = ''; img.removeAttribute('src'); }
+}
+
+/* ---------- loops ---------- */
+async function loadConfig(){
+  if (DEMO) return;
+  try {
+    const r = await fetch('api/config'); if (!r.ok) return;
+    const doc = new DOMParser().parseFromString(await r.text(), 'application/xml');
+    for (const sc of doc.getElementsByTagName('spacecraft')){
+      const n = sc.getAttribute('name'), f = sc.getAttribute('friendlyName');
+      if (n && f) configNames[n.toLowerCase()] = f;
+    }
+  } catch(e){}
+}
+
+async function poll(){
+  const feed = $('feed');
+  try {
+    const r = await fetch(DEMO ? 'sample-dsn.xml' : 'api/dsn', {cache:'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    const sites = parse(await r.text());
+    const stale = r.headers.get('X-Stale');
+    feed.className = 'feed' + (stale ? ' stale' : '');
+    feed.lastChild.textContent = DEMO ? 'Demo data' : (stale ? 'Feed delayed' : 'Live');
+    const prev = items[idx];
+    lastSites = sites;
+    items = spotlights(sites);
+    // keep the current spotlight steady across refreshes
+    const keep = prev && items.findIndex(i => i.dish.name===prev.dish.name && i.craft===prev.craft);
+    if (keep >= 0){ idx = keep; refreshNumbers(items[idx]); }
+    else { idx = 0; showSpot(); }
+    const n = new Set(items.map(i=>i.craft)).size;
+    const dishes = new Set(items.map(i=>i.dish.name)).size;
+    $('sum').textContent = `${n} spacecraft on ${dishes} dishes`;
+  } catch(e){
+    feed.className = 'feed down';
+    feed.lastChild.textContent = 'Feed offline, retrying';
+    if (!lastSites) $('sum').textContent = 'Waiting for NASA’s feed';
+  }
+}
+function refreshNumbers(it){
+  renderSites(lastSites, it.dish.name+'/'+it.craft);
+  $('s-dist').innerHTML = html(...fmtDist(it.range));
+  $('s-owlt').innerHTML = html(...fmtLight(it.rtlt ? it.rtlt/2 : null));
+  const dr = it.dn && fmtRate(it.dn.rate), ur = it.up && fmtRate(it.up.rate);
+  $('s-down').innerHTML = dr ? html(...dr) : (it.dn ? 'Carrier' : '–');
+  $('s-up').innerHTML   = ur ? html(...ur) : (it.up ? 'Carrier' : '–');
+}
+function tick(){
+  $('utc').textContent = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', timeZone:'UTC'}) + ' UTC';
+}
+
+tick(); setInterval(tick, 10000);
+loadConfig().then(poll);
+setInterval(poll, POLL);
+setInterval(() => { if (items.length > 1){ idx = (idx+1) % items.length; showSpot(); } }, ROTATE);
+// a full reload once a day keeps a long-running kiosk tidy
+setTimeout(() => location.reload(), 24*3600*1000);
+</script>
+</body>
+</html>

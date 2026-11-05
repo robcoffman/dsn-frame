@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='utf-8'?>
+<dsn>
+<station name="gdscc" friendlyName="Goldstone" timeUTC="1762314000000" timeZoneOffset="-28800000"/>
+<dish name="DSS14" azimuthAngle="171.2" elevationAngle="38.5" windSpeed="9.2" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="160" frequency="8420432000" power="-160.31" spacecraft="VGR1" spacecraftID="-31"/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="VGR1" spacecraftID="-31"/>
+<target name="VGR1" id="31" uplegRange="2.54e+10" downlegRange="2.54e+10" rtlt="169440.2"/>
+</dish>
+<dish name="DSS24" azimuthAngle="140.3" elevationAngle="55.0" windSpeed="9.2" isMSPA="true" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="2617000" frequency="8439444000" power="-128.9" spacecraft="MRO" spacecraftID="-74"/>
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="2048000" frequency="8446000000" power="-131.1" spacecraft="MVN" spacecraftID="-202"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="2000" frequency="7183" power="18.5" spacecraft="MRO" spacecraftID="-74"/>
+<target name="MRO" id="74" uplegRange="3.12e+08" downlegRange="3.12e+08" rtlt="2081.4"/>
+<target name="MVN" id="202" uplegRange="3.12e+08" downlegRange="3.12e+08" rtlt="2081.5"/>
+</dish>
+<dish name="DSS25" azimuthAngle="210.0" elevationAngle="22.4" windSpeed="9.2" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="28000000" frequency="25900000000" power="-110.2" spacecraft="JWST" spacecraftID="-170"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="16000" frequency="2090" power="1.2" spacecraft="JWST" spacecraftID="-170"/>
+<target name="JWST" id="170" uplegRange="1.48e+06" downlegRange="1.48e+06" rtlt="9.9"/>
+</dish>
+<dish name="DSS26" azimuthAngle="0" elevationAngle="90" windSpeed="9.2" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+</dish>
+<station name="mdscc" friendlyName="Madrid" timeUTC="1762314000000" timeZoneOffset="3600000"/>
+<dish name="DSS63" azimuthAngle="95.1" elevationAngle="18.7" windSpeed="4.1" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="1000" frequency="8438000000" power="-150.4" spacecraft="NHPC" spacecraftID="-98"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="7.8" frequency="7182" power="20.0" spacecraft="NHPC" spacecraftID="-98"/>
+<target name="NHPC" id="98" uplegRange="9.12e+09" downlegRange="9.12e+09" rtlt="60840.0"/>
+</dish>
+<dish name="DSS55" azimuthAngle="120.4" elevationAngle="41.0" windSpeed="4.1" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="200000" frequency="8404000000" power="-139.0" spacecraft="EURC" spacecraftID="-159"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="2000" frequency="7162" power="18.0" spacecraft="EURC" spacecraftID="-159"/>
+<target name="EURC" id="159" uplegRange="3.05e+08" downlegRange="3.05e+08" rtlt="2034.0"/>
+</dish>
+<dish name="DSS56" azimuthAngle="0" elevationAngle="90" windSpeed="4.1" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+</dish>
+<dish name="DSS65" azimuthAngle="250.0" elevationAngle="30.2" windSpeed="4.1" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="carrier" signalTypeDebug="IN LOCK" dataRate="" frequency="8435000000" power="-145.0" spacecraft="JNO" spacecraftID="-61"/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="JNO" spacecraftID="-61"/>
+<target name="JNO" id="61" uplegRange="8.85e+08" downlegRange="8.85e+08" rtlt="5904.0"/>
+</dish>
+<station name="cdscc" friendlyName="Canberra" timeUTC="1762314000000" timeZoneOffset="39600000"/>
+<dish name="DSS43" azimuthAngle="160.0" elevationAngle="48.0" windSpeed="12.0" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="160" frequency="8420000000" power="-163.0" spacecraft="VGR2" spacecraftID="-32"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="16" frequency="2114" power="18.0" spacecraft="VGR2" spacecraftID="-32"/>
+<target name="VGR2" id="32" uplegRange="2.11e+10" downlegRange="2.11e+10" rtlt="140760.0"/>
+</dish>
+<dish name="DSS34" azimuthAngle="45.0" elevationAngle="60.0" windSpeed="12.0" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="22000" frequency="8468000000" power="-140.0" spacecraft="PSYC" spacecraftID="-255"/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="PSYC" spacecraftID="-255"/>
+<target name="PSYC" id="255" uplegRange="4.40e+08" downlegRange="4.40e+08" rtlt="2935.0"/>
+</dish>
+<dish name="DSS35" azimuthAngle="300.0" elevationAngle="25.0" windSpeed="12.0" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="data" signalTypeDebug="IN LOCK" dataRate="4000" frequency="8400000000" power="-152.0" spacecraft="LUCY" spacecraftID="-49"/>
+<upSignal signalType="data" signalTypeDebug="ON" dataRate="125" frequency="7150" power="10.0" spacecraft="LUCY" spacecraftID="-49"/>
+<target name="LUCY" id="49" uplegRange="7.80e+08" downlegRange="7.80e+08" rtlt="5203.0"/>
+</dish>
+<dish name="DSS36" azimuthAngle="0" elevationAngle="90" windSpeed="12.0" isMSPA="false" isArray="false" isDDOR="false" created="2026-11-05T03:40:00.000Z" updated="2026-11-05T03:40:00.000Z">
+<downSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+<upSignal signalType="none" signalTypeDebug="OFF" dataRate="" frequency="" power="" spacecraft="" spacecraftID=""/>
+</dish>
+<timestamp>1762314000000</timestamp>
+</dsn>
