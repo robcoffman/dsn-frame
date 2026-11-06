@@ -30,7 +30,7 @@ UA = "dsn-frame/1.0 (home wall display; python-urllib)"
 DSN_URL = "https://eyes.nasa.gov/dsn/data/dsn.xml?r={}"
 CONFIG_URL = "https://eyes.nasa.gov/apps/dsn-now/config.xml"
 WIKI_URL = "https://en.wikipedia.org/api/rest_v1/page/summary/{}"
-IMG_HOSTS = {"upload.wikimedia.org"}
+IMG_HOSTS = {"upload.wikimedia.org", "thumb.wikimedia.org"}
 
 _lock = threading.Lock()
 _mem = {}  # key -> (fetched_at, bytes)
@@ -112,7 +112,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if urllib.parse.urlparse(src).hostname not in IMG_HOSTS:
                     return self.send_error(403, "host not allowed")
                 data, _ = cached("img:" + src, 10 ** 9, lambda: src, disk=True)
-                ext = src.lower().rsplit(".", 1)[-1]
+                ext = urllib.parse.urlparse(src).path.lower().rsplit(".", 1)[-1]
                 ctype = {"png": "image/png", "svg": "image/svg+xml", "gif": "image/gif",
                          "webp": "image/webp"}.get(ext, "image/jpeg")
                 return self.send_bytes(data, ctype, max_age=86400 * 30)

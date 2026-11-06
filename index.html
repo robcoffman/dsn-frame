@@ -343,10 +343,11 @@ async function wiki(title){
   }
   return (wikiCache[title] = j);
 }
-function imgUrl(src){
+function imgUrl(src, big=true){
   if (!src) return null;
-  const big = src.replace(/\/(\d+)px-/, '/640px-');   // sharper than the default 320px thumb
-  return DEMO ? big : `api/img?u=${encodeURIComponent(big)}`;
+  // Wikimedia only serves standard thumb widths (330, 500, 960, ...); 960 is sharper than the default 330
+  const u = big ? src.replace(/\/(\d+)px-/, '/960px-') : src;
+  return DEMO ? u : `api/img?u=${encodeURIComponent(u)}`;
 }
 
 let items = [], idx = 0, lastSites = null;
@@ -383,10 +384,15 @@ async function showSpot(){
   if (items[idx] !== it) return;   // rotated on while we were waiting
   const extract = w && w.extract ? w.extract : '';
   $('blurb').textContent = extract;
-  const src = imgUrl(w && w.thumbnail && w.thumbnail.source);
+  const thumb = w && w.thumbnail && w.thumbnail.source;
+  const src = imgUrl(thumb);
   if (src){
+    const fallback = imgUrl(thumb, false);
     img.onload = () => { img.classList.add('on'); $('ph').style.display = 'none'; };
-    img.onerror = () => { $('ph').style.display = ''; };
+    img.onerror = () => {   // no 960px version (small original): use Wikipedia's default thumb
+      if (img.src.endsWith(fallback) || src === fallback){ $('ph').style.display = ''; return; }
+      img.src = fallback;
+    };
     img.src = src;
   } else { $('ph').style.display = ''; img.removeAttribute('src'); }
 }
