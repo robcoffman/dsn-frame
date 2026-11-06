@@ -9,6 +9,8 @@ The data comes from the same public feed that powers NASA's DSN Now page. Spacec
 | File | What it is |
 |---|---|
 | `index.html` | The display. Plain HTML/CSS/JS, no WebGL, light enough for a Pi Zero 2 W. |
+| `overlay.html` | Compact transparent card for OBS overlays. |
+| `dsn-core.js` | Shared code for both pages: feed parsing, spacecraft names, formatting. |
 | `server.py` | Tiny Python server (standard library only). It serves the page and proxies and caches the NASA feed and Wikipedia so the browser never hits CORS. |
 | `sample-dsn.xml` | Demo data, so you can try it with no network. |
 
@@ -42,7 +44,32 @@ The port is bound to localhost only. Change it to `"8080:8080"` in `compose.yaml
 
 ## Use in OBS (video calls)
 
-Add a **Browser Source** with URL `http://localhost:8080/` (or the Docker/Pi host's address) and set the width and height to the shape you want. The layout adapts: 1920×1080 gives the full landscape view, while a tall size such as 1080×1920 gives the stacked portrait view. Untick *Shutdown source when not visible* so it doesn't reload each time you switch scenes. Then use *Start Virtual Camera* to send it to Zoom, Meet or Teams, or put it in a scene beside your webcam.
+There are two pages, both served by the same server:
+
+| Page | Best for |
+|---|---|
+| `overlay.html` | A small card in the corner of your stream. Shows one antenna at a time on rotation, with a **transparent background**, so only the card appears over your camera or screen. |
+| `/` (the full display) | A whole scene of its own. |
+
+**Corner overlay:** in OBS add a **Browser Source** with URL `http://localhost:8080/overlay.html`. Set its width and height to the shape you want; the card fills that size and rearranges itself:
+
+- 480 × 270: wide card, photo on the left
+- 360 × 360: square card, photo on top
+- 420 × 150 with `?photo=0`: a thin bar
+
+Then drag it into a corner. No chroma key needed: OBS keeps the page's transparency.
+
+Overlay options (add to the URL, e.g. `overlay.html?rotate=20&bg=0.7`):
+
+| Option | Effect |
+|---|---|
+| `?rotate=12` | Seconds per antenna (default 12) |
+| `?photo=0` | Hide the spacecraft photo |
+| `?ladder=0` | Hide the distance bar |
+| `?bg=0.85` | Card background opacity, 0 (clear) to 1 (solid) |
+| `?lite`, `?demo`, `?poll=N` | Same as the full display |
+
+Tips: untick *Shutdown source when not visible* so it doesn't reload when you switch scenes. To send OBS into Zoom, Meet or Teams, use *Start Virtual Camera*.
 
 ## Raspberry Pi setup (Raspberry Pi OS with desktop, Bookworm or newer)
 

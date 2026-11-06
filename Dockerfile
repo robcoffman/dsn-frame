@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 WORKDIR /app
-COPY index.html server.py sample-dsn.xml ./
+COPY index.html overlay.html dsn-core.js server.py sample-dsn.xml ./
 RUN mkdir cache && chown nobody cache
 USER nobody
 EXPOSE 8080
