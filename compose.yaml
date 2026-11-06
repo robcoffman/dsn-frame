@@ -1,0 +1,13 @@
+services:
+  dsn-frame:
+    build: .
+    image: dsn-frame
+    restart: unless-stopped
+    ports:
+      # Only this machine can reach it. Use "8080:8080" to share it on your LAN.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - dsn-cache:/app/cache   # keeps cached photos/feed across rebuilds
+
+volumes:
+  dsn-cache:

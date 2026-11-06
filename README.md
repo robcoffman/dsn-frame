@@ -31,6 +31,19 @@ python3 server.py --port 8080
 
 The layout switches automatically between landscape and portrait/square, so the same page works on a 16:9 frame or a screen turned on its side in a cube.
 
+## Run with Docker
+
+```bash
+docker compose up -d --build
+# http://localhost:8080/
+```
+
+The port is bound to localhost only. Change it to `"8080:8080"` in `compose.yaml` to reach it from other machines on your network.
+
+## Use in OBS (video calls)
+
+Add a **Browser Source** with URL `http://localhost:8080/` (or the Docker/Pi host's address) and set the width and height to the shape you want. The layout adapts: 1920×1080 gives the full landscape view, while a tall size such as 1080×1920 gives the stacked portrait view. Untick *Shutdown source when not visible* so it doesn't reload each time you switch scenes. Then use *Start Virtual Camera* to send it to Zoom, Meet or Teams, or put it in a scene beside your webcam.
+
 ## Raspberry Pi setup (Raspberry Pi OS with desktop, Bookworm or newer)
 
 1. Copy the folder to `/home/pi/dsn-frame`. Adjust the user/paths below if yours differ.
